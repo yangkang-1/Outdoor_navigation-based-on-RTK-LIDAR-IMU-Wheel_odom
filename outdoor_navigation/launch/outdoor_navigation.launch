@@ -1,0 +1,24 @@
+<launch>
+    <param name="use_sim" value="true"/>
+    <!-- Arguments -->
+    <arg name="open_rviz" default="true"/>
+    <arg name="move_forward_only" default="false"/>
+    <arg name="map_file" default="$(find outdoor_navigation)/maps/blank_map.yaml"/>
+
+    <!-- Map server -->
+    <node pkg="map_server" type="map_server" name="map_server" args="$(arg map_file)"/>
+
+    <!-- move_base -->
+    <include file="$(find outdoor_navigation)/launch/move_base.launch">
+        <arg name="move_forward_only" value="$(arg move_forward_only)"/>
+        <!-- <arg name="cmd_vel_topic" default="/cmd_vel" />
+        <arg name="odom_topic" default="odom_temp" /> -->
+		</include>
+
+    <!-- rviz -->
+    <!-- <group if="$(arg open_rviz)"> 
+      <node pkg="rviz" type="rviz" name="rviz" required="true"
+            args="-d $(find outdoor_navigation)/config/show_navigation.rviz"/>
+    </group> -->
+
+</launch>

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<launch>
+  <param name="use_sim" value="true"/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_imu_broadcaster" args="0 0 2 0 0 0 /base_link /imu_link" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_gps_broadcaster" args="0 0 3 0 0 0 /base_link /gps " />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="map_odom_broadcaster" args="0 0 0 0 0 0 /map /odom " />
+  <rosparam command="load" file="$(find outdoor_navigation)/params/ekf_params.yaml" />
+  <rosparam command="load" file="$(find outdoor_navigation)/params/navsat_params_sim.yaml" />
+ 
+ <node pkg="outdoor_navigation" type="draw_path" name="draw_path" />
+
+  <!-- <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se_odom" clear_params="true"/> -->
+
+
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se_map" clear_params="true">
+    <remap from="odometry/filtered" to="odometry/filtered_map"/>
+  </node>  
+
+  <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform" clear_params="true" output="screen" >
+      <remap from="odometry/filtered" to="odometry/filtered_map"/>
+      <remap from="gps/fix" to="/ublox_driver/receiver_lla"/>
+      <!-- <remap from="imu/data" to="/imu0"/> -->
+  </node>
+  
+  
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find outdoor_navigation)/config/r300_navigation.rviz" />
+
+</launch>
